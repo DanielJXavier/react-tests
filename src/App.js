@@ -1,28 +1,46 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
 
 class App extends Component {
+  state = {
+    mask: 'dd/mm/yyyy',
+    date: ''
+  }
+
+  inputHandler = (key, value) => {
+    const { mask } = this.state
+
+    let maskedValue = ''
+
+    let r = 1
+    value.replace(/\D/g, '').split('').forEach((c, i) => {
+      /\W/.test(mask[i + r - 1]) && (maskedValue += mask[i + r - 1]) && r++
+
+      maskedValue += c
+
+      value[i + r] && value[i + r] === mask[i + r] && (maskedValue += value[i + r]) && r++
+    })
+
+    this.setState({ [key]: maskedValue })
+  }
+
   render() {
+    const { mask, date } = this.state
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+      <>
+        <fieldset>
+          <legend>Data ({mask})</legend>
+          <input
+            name="date"
+            value={date}
+            type="text"
+            maxLength={mask.length}
+            onChange={({ target: { name, value } }) => this.inputHandler(name, value)}
+          />
+        </fieldset>
+      </>
+    )
   }
 }
 
-export default App;
+export default App
